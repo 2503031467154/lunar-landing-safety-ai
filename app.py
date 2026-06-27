@@ -90,7 +90,7 @@ if uploaded_file is not None:
 
     if analyze_button:
         with st.spinner("Analyzing lunar terrain..."):
-            result, edges = analyze_lunar_terrain(image)
+            result, edges, heatmap, dashboard = analyze_lunar_terrain(image)
 
         st.markdown("""
         <div class="success-box">
@@ -112,13 +112,35 @@ if uploaded_file is not None:
 
         st.divider()
 
-        st.subheader("📊 Result Summary")
+        st.subheader("📊 Landing Safety Dashboard")
 
-        c1, c2, c3 = st.columns(3)
+        c1, c2, c3, c4 = st.columns(4)
 
-        c1.metric("Danger Zones", "Detected")
-        c2.metric("Safe Zones", "Marked")
-        c3.metric("Status", "Analysis Complete")
+        c1.metric(
+            "🕳️ Craters",
+             dashboard["crater_count"]
+        )
+
+        c2.metric(
+            "✅ Safe Area",
+            f"{dashboard['safe_area_percentage']}%"
+        )
+
+        c3.metric(
+            "⛰️ Roughness",
+            dashboard["terrain_roughness_score"]
+        )
+
+        c4.metric(
+            "⚠️ Risk Score",
+            f"{dashboard['risk_score']}/100"
+       )
+
+        st.subheader("🗺️ Risk Heatmap")
+        st.image(heatmap, use_container_width=True)
+
+        st.subheader("📍 Recommended Landing Coordinates")
+        st.write(dashboard["recommended_coordinates"])
 
         st.info("Green boxes indicate possible safe landing zones. Red circles indicate dangerous crater regions.")
 
